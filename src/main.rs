@@ -35,6 +35,7 @@ fn main() -> Result<(), String> {
     let mut event_pump = sdl_context.event_pump()?;
     let mut i = 0;
 
+    // TODO: Window sometimes lag and does not change colors.
     'running: loop {
         i = (i + 1) % 255;
         println!("{}", i);
