@@ -3,7 +3,7 @@ use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use std::time::Duration;
 
-fn main() -> Result<(), String> {
+fn main() {
     struct WindowProperties {
         title: String,
         width: u32,
@@ -20,43 +20,43 @@ fn main() -> Result<(), String> {
         }
     }
 
-    let sdl_context = sdl2::init()?;
-    let video_subsystem = sdl_context.video()?;
+    let sdl_context = sdl2::init().unwrap();
+    let video_subsystem = sdl_context.video().unwrap();
 
-    let window_properties: WindowProperties = Default::default(); 
+    let window_properties: WindowProperties = Default::default();
+
     let window = video_subsystem.window(&window_properties.title, window_properties.width, window_properties.height)
         .position_centered()
         .build()
-        .expect("Could not create window.");
+        .unwrap();
 
-    let mut canvas = window.into_canvas().build()
-        .expect("Could not initialize canvas.");
+    let mut canvas = window.into_canvas().build().unwrap();
 
-    let mut event_pump = sdl_context.event_pump()?;
+    canvas.set_draw_color(Color::RGB(0, 255, 255));
+    canvas.clear();
+    canvas.present();
+
+    let mut event_pump = sdl_context.event_pump().unwrap();
     let mut i = 0;
 
     'running: loop {
         i = (i + 1) % 255;
-        println!("{}", i);
 
         canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
         canvas.clear();
 
         for event in event_pump.poll_iter() {
             match event {
-                Event::Quit {..} | 
-                Event::KeyDown {keycode: Some(Keycode::Escape), ..} => {
-                    break 'running;
+                Event::Quit {..} |
+                Event::KeyDown { keycode: Some(Keycode::Escape), .. } => {
+                    break 'running
                 },
-                
                 _ => {}
             }
-
-            canvas.present();
-            ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
         }
+        // The rest of the game loop goes here...
+
+        canvas.present();
+        ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
     }
-
-    Ok(())
 }
-
